@@ -613,7 +613,7 @@ event type also includes the following ``context`` member field.
 .. _navigational:
 
 ==============================
-Navigational Events
+Course Navigation Events
 ==============================
 
 This section includes descriptions of the following events.
@@ -621,6 +621,230 @@ This section includes descriptions of the following events.
 .. contents::
   :local:
   :depth: 1
+
+
+``edx.ui.lms.sequence.next_selected``/``seq_next``
+**************************************************
+
+The browser emits this event when a user selects the "next" control in the
+unit navigation bar in the LMS. Users can use the "next" control to navigate
+from one unit to the next unit within the current subsection, or from the last
+unit in one subsection to the first unit in the next subsection.
+
+**History** : On May 3, 2016, the "next" navigation control in the LMS was
+enhanced to allow users to move not only within a subsection but also
+between subsections. The ``seq_next`` event was correspondingly enhanced
+with additional fields and now maps to the new event
+``edx.ui.lms.sequence.next_selected``.
+
+This new event is emitted when users navigate in the LMS using the "next"
+control. Depending on whether a learner navigates within the current
+subsection or between subsections, the resulting event has a different
+``event_type`` value.
+
+* Navigating to the next unit within a subsection (the already supported
+  interaction that previously emitted the ``seq_next`` event) now emits the
+  new event with an ``event_type`` of ``seq_prev``, so that you can continue
+  to track the same interaction.
+
+* Navigating from the last unit in one subsection to the first unit in the
+  next subsection, which is the newly supported interaction, emits the new
+  event with both an ``event_type`` and ``name`` of
+  ``edx.ui.lms.sequence.next_selected``.
+
+Events that have both a ``name`` and an ``event_type`` of ``seq_next`` are no
+longer emitted.
+
+**Component**: Sequence
+
+**Event Source**: Browser
+
+The ``edx.ui.lms.sequence.next_selected`` event includes identifying
+``event_type`` and ``name`` fields.
+
+.. list-table::
+   :widths: 15 15 60
+   :header-rows: 1
+
+   * - Field
+     - Type
+     - Details
+
+   * - ``event_type``
+     - string
+     - .
+
+   * - ``name``
+     - string
+     - .
+
+The ``edx.ui.lms.sequence.next_selected`` event includes the following
+``event`` member fields.
+
+``event`` **Member Fields**:
+
+.. list-table::
+   :widths: 15 15 60
+   :header-rows: 1
+
+   * - Field
+     - Type
+     - Details
+
+   * - ``current_tab``
+     - integer
+     - Identifies the tab or icon in the unit navigation bar that the user was
+       viewing prior to selecting "next". Tabs correspond to the unit in the
+       subsection (or verticals in the sequence) and are indexed starting from
+       1. If this value is equal to ``tab_count``, the user was on the last
+       vertical of the subsection.
+
+   * - ``id``
+     - string
+     - The usage key of the subsection that is being navigated by the user.
+
+   * - ``new``
+     - integer
+     - Identifies the tab that the user was navigating to.
+
+       This field is included only for events that are emitted by "next"
+       navigation within a subsection. These events have an ``event_type`` of
+       ``seq_next`` to enable backward compatibility with the ``seq_next``
+       events emitted prior to 3 May 2016.
+
+   * - ``old``
+     - integer
+     - Identifies the tab that the user was navigating from.
+
+       This field is included only for events that are emitted by "next"
+       navigation within a subsection. These events have an ``event_type`` of
+       ``seq_next`` to enable backward compatibility with the ``seq_next``
+       events emitted prior to 3 May 2016.
+
+       New ``edx.ui.lms.sequence.next_selected`` events use the
+       ``current_tab`` value to identify the user's position in the unit, and
+       do not include this field.
+
+   * - ``tab_count``
+     - integer
+     - The number of tabs in the unit navigation bar. This number
+       matches the total number of units in the current subsection.
+
+   * - ``widget_placement``
+     - string
+     - Unit navigation controls appear at the top and bottom of pages in the
+       LMS. Values for this field can be "top" or "bottom", indicating the
+       position on the page of the control that the user selected.
+
+
+
+``edx.ui.lms.sequence.previous_selected``
+*****************************************
+
+The browser emits this event when a user selects the "previous" control in the
+unit navigation bar in the LMS. Users can use the "previous" control to navigate
+from one unit back to the previous unit within the current subsection, or from the first
+unit in one subsection to the last unit in the previous subsection.
+
+**History** : On May 3, 2016, the "previous" navigation control in the LMS was
+enhanced to allow users to move not only within a subsection but also
+between subsections. The ``seq_prev`` event was correspondingly enhanced
+with additional fields and now maps to the new event
+``edx.ui.lms.sequence.previous_selected``.
+
+This new event is emitted when users navigate in the LMS using the "previous"
+control. Depending on whether a learner navigates within the current
+subsection or between subsections, the resulting event has a different
+``event_type`` value.
+
+* Navigating to the previous unit within a subsection (the already supported
+  interaction that previously emitted the ``seq_prev`` event) now emits the
+  new event with an ``event_type`` of ``seq_prev``, so that you can continue
+  to track the same interaction.
+
+* Navigating from the first unit in one subsection to the last unit in the
+  previous subsection, which is the newly supported interaction, emits the new
+  event with both an ``event_type`` and ``name`` of
+  ``edx.ui.lms.sequence.previous_selected``.
+
+Events that have both a ``name`` and an ``event_type`` of ``seq_prev`` are no
+longer emitted.
+
+**Component**: Sequence
+
+**Event Source**: Browser
+
+The ``edx.ui.lms.sequence.previous_selected`` event includes the same
+identifying ``event_type`` and ``name`` fields as described for the
+``edx.ui.lms.sequence.next_selected`` event.
+
+``event`` **Member Fields**:
+
+The ``edx.ui.lms.sequence.previous_selected`` event also includes the
+following ``event`` member fields. These fields serve the same purpose for
+events of this type as for ``edx.ui.lms.sequence.next_selected`` events.
+
+* ``current_tab``
+* ``id``
+* ``new``
+* ``old``
+* ``tab_count``
+* ``widget_placement``
+
+
+``edx.ui.lms.sequence.tab_selected``
+************************************
+
+The browser emits this event when a user selects any tab in the unit
+navigation bar in the LMS to navigate to another unit within the subsection.
+
+**History** : On May 3, 2016, the ``seq_goto`` event was promoted to a new
+naming infrastructure and now maps to the new event
+``edx.ui.lms.sequence.tab_selected``.
+
+New fields have been added to the event, but existing fields are retained for
+backward compatibility. The ``event_type`` field has a value of ``seq_goto``,
+to ensure that you can map these new events to the   ``seq_goto`` events that
+were emitted previously.
+
+Events that have both a ``name`` and an ``event_type`` of ``seq_goto`` are no
+longer emitted.
+
+**Component**: Sequence
+
+**Event Source**: Browser
+
+The ``edx.ui.lms.sequence.tab_selected`` event includes the same identifying
+``event_type`` and ``name`` fields as described for the
+``edx.ui.lms.sequence.next_selected`` event.
+
+``event`` **Member Fields**:
+
+.. list-table::
+   :widths: 15 15 60
+   :header-rows: 1
+
+   * - Field
+     - Type
+     - Details
+
+   * - ``target_tab``
+     - integer
+     - Identifies the tab or icon in the unit navigation bar that the user
+       selected to navigate to. Tabs correspond to the unit in the subsection,
+       and are indexed starting from 1.
+
+The ``edx.ui.lms.sequence.tab_selected`` event also includes the following
+``event`` member fields. These fields serve the same purpose for events of
+this type as for ``edx.ui.lms.sequence.next_selected`` events.
+
+* ``current_tab``
+* ``id``
+* ``new``
+* ``old``
+* ``tab_count``
+* ``widget_placement``
+
 
 ``page_close``
 **************
@@ -632,51 +856,6 @@ The ``page_close`` event originates from within the JavaScript Logger itself.
 **Event Source**: Browser
 
 ``event`` **Member Fields**: None
-
-
-``seq_goto``, ``seq_next``, and ``seq_prev``
-********************************************
-
-The browser emits these events when a user selects a navigational control.
-
-* ``seq_goto`` is emitted when a user jumps between units in a sequence.
-
-* ``seq_next`` is emitted when a user navigates to the next unit in a sequence.
-
-* ``seq_prev`` is emitted when a user navigates to the previous unit in a
-  sequence.
-
-**Component**: Sequence
-
-**Event Source**: Browser
-
-``event`` **Member Fields**:
-
-All of these navigational events have the same ``event`` member fields.
-
-.. list-table::
-   :widths: 15 15 60
-   :header-rows: 1
-
-   * - Field
-     - Type
-     - Details
-   * - ``id``
-     - number
-     - The edX ID of the sequence.
-   * - ``new``
-     - number
-     - For ``seq_goto``, the index of the unit being jumped to.
-
-       For ``seq_next`` and ``seq_prev``, the index of the unit being navigated
-       to.
-
-   * - ``old``
-     - number
-     - For ``seq_goto``, the index of the unit being jumped from.
-
-       For ``seq_next`` and ``seq_prev``, the index of the unit being navigated
-       away from.
 
 
 .. _video:
@@ -1334,7 +1513,7 @@ has transcripts in multiple languages, the browser emits a
 
 In addition to the identifying ``event_type`` of ``video_hide_cc_menu``, events
 that the edX mobile app emits also include a ``name`` field with a value of
-``edx.video.language_menu.hidden`` and the selected language is included in the 
+``edx.video.language_menu.hidden`` and the selected language is included in the
 event.
 
 **Event Source**: Browser
