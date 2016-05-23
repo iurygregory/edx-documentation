@@ -62,7 +62,130 @@ Think carefully when to use function declaration and when to use function expres
 
 When creating an object and populating it with properties, the names of the properties should be surrounded by quotes only if they include some unsupported symbols. Otherwise, for code consistency, leave off the quotes (single or double).
 
-Sometimes it is very tempting to test if an object really does contain a property by using the Object.hasOwnProperty() method. This is unnecessary, and should be done only in the case when it has been confirmed that the prototype chain of the object also has a property with the same name.
+Sometimes it is very tempting to test if an object really does contain a property by using the ``Object.hasOwnProperty()`` method. This is unnecessary, and should be done only in the case when it has been confirmed that the prototype chain of the object also has a property with the same name.
+
+When writing a JavaScript component, please adhere to the following guidelines:
+
+* Write modular JavaScript whenever possible
+* Use closures whenever possible
+* Lint your code
+
+******************
+Modular JavaScript
+******************
+
+A module is a function or object that presents an interface but that hides its state and implementation. Functions are used to produce modules, eliminating global variables and increasing security and privacy.
+
+Modular JavaScript also allows us to bundle complete functionality which makes using RequireJS possible.
+
+Example:
+
+.. code-block:: javascript
+
+    var SomeObject = {
+
+        add: function(int1, int2) {
+            return Number(int1) + Number(int2);
+        },
+
+        result: function() {
+            this.add(2, 10);  // returns 12
+        }
+    };
+
+******************
+Closures
+******************
+
+In addition to writing modules, enclosing your JavaScript in a closure will greatly increase security. A closure returns an object literal, and uses scope to keep the methods hidden.
+
+Example:
+
+.. code-block:: javascript
+
+    var someObject = (function() {
+
+        var value = 0;
+
+        return {
+            add: function(int1, int2) {
+                return Number(int1) + Number(int2);
+            },
+
+            result: function() {
+                value = this.add(2, 10);  // returns 12
+            }
+        };
+    }());
+
+******************
+Linting
+******************
+
+We want our JavaScript to be properly written and error-free. Luckily this isn't something you need to worry about manually including because we include a linter in our grunt compile. So whenever you fire up your local pattern library install, your JavaScript will be linted automatically. Check for any errors or warnings in your console!
+
+********************
+RequireJS
+********************
+
+We use RequireJS to help manage JavaScript dependencies and integrate our pattern library more efficiently into our main platform, since it too uses RequireJS. You should have some familiarity with using RequireJS so that your scripts are not only included, but efficient.
+
+===========================
+Brief overview of RequireJS
+===========================
+
+RequireJS makes use of required files and dependencies for every individual script. Any script you need to be loaded at site load should be included in the required.js file, which is loaded with Require (and other than Require, is the only file loaded at site load).
+
+Example:
+
+.. code-block:: javascript
+
+    require([
+        'jquery',
+        '/public/pldoc/js/ui.js',
+        '../../js/svg4everybody.min'
+        ],
+        function($, Ui) {
+
+        ...your code here...
+    });
+
+This is our required.js file. It sets the required files at site load and then sets aliases, if desired. Our Ui file here, loads our other front-end scripts.
+
+.. code-block:: javascript
+
+    define([
+        'jquery',
+        '/public/pldoc/js/jquery.smooth-scroll.js',
+        '/public/pldoc/js/tabs.js',
+        '/public/pldoc/js/size-slider.js',
+        '/public/pldoc/js/color-contrast.js',
+        '/public/js/select-replace.js'
+        ], function($, smoothScroll, Tabs, IconSlider, ColorContrast) {
+
+        ...your code here...
+    });
+
+At the top of our ui.js file, here's where we load the rest of our front-end files. Similar to our required.js file, we reference the files and then give them an alias which we may use elsewhere.
+
+===========================
+Adding a new JavaScript
+===========================
+
+When you want to add a new JavaScript, make it modular and use a closure. When that's done, add the RequireJS wrapper, like so:
+
+.. code-block:: javascript
+
+    define([
+        'jquery'
+        ], function($) {
+
+        ...your code here...
+
+    });
+
+Your define block should include any dependencies your file has. In this case, this particular script requires jQuery.
+
 
 ****************
 Testing
