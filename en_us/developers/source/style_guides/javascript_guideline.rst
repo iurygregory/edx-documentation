@@ -1,4 +1,4 @@
-..  _edx_python_guidelines:
+..  _edx_javascript_guidelines:
 
 ##########################
 EdX JavaScript Style Guide

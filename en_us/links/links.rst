@@ -154,11 +154,9 @@
 
 .. _Open edX Native Installation: https://openedx.atlassian.net/wiki/x/bgCXAw
 
-.. _http://ux.edx.org/: http://ux.edx.org/
+.. _ux.edx.org: http://ux.edx.org/
 
-.. _http://ui-toolkit.edx.org/: http://ui-toolkit.edx.org/
-
-.. _http://ui-toolkit.edx.org/: http://ui-toolkit.edx.org/
+.. _ui-toolkit.edx.org: http://ui-toolkit.edx.org/
 
 .. _edx-ui-toolkit GitHub repository: https://github.com/edx/edx-ui-toolkit
 
