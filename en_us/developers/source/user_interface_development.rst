@@ -12,6 +12,18 @@ Pattern Library. You can use JavaScript from the edX UI Toolkit JavaScript
 library to implement pages in a way that is consistent with edX UI
 architecture.
 
+.. Add an overview of the current architecture.
+.. * Django views generated using Mako templates
+.. * Dynamic pages created using RequireJS, Backbone and Underscore,
+..   making AJAX calls to Django REST APIs
+.. * Sass is used to create stylesheets and libsass is used to convert
+..   them to CSS files
+.. * Production pages are bundled and minified using RequireJS
+..   Optimizer and served through the Django Pipeline
+
+.. Add a performance section that explains best practices for ensuring
+.. performant pages.
+
 .. contents::
  :local:
  :depth: 2
@@ -39,7 +51,44 @@ The edX Pattern Library is available at `ux.edx.org`_.
 The edx-platform GitHub repository includes an `example web page
 <https://github.com/edx/edx-platform/blob/master/lms/templates/ux/reference
 /pattern-library-test.html>`_ that demonstrates using the Pattern Library. You
-can use the example page as a template for creating your own new pages.
+can use the example page as a template for creating your own new LMS or Studio
+pages.
+
+To create a new page using the Pattern Library, you use the same main.html
+template as for non-Pattern Library pages, and pass the two following context
+parameters.
+
+    .. code-block:: none
+
+        {
+            ...
+            'disable_courseware_js': True,
+            'uses_pattern_library': True,
+        }
+
+When you create a page using the Pattern Library, create two new root Sass
+files for your page (for left-to-right and right-to-left localizations). For
+more information about Sass files, see the `Sass site <http://sass-
+lang.com/>`_.
+
+    * The RTL version of the file must have the same filename as the
+      LTR version but ending with ``-rtl``.
+
+    * Declare the name of your Sass files at the top of your main Mako file.
+      For example, if your file is feature-main.scss:
+
+        .. code-block:: html
+
+            <%! main_css = "feature-main" %>
+
+Examples:
+
+* `Pattern Library test page <https://github.com/edx/edx-
+  platform/blob/master/lms/templates/ux/reference/pattern-library-test.html>`_
+
+* PR to convert the programs list to be a Pattern Library page: `PR 12380
+  <https://github.com/edx/edx-platform/pull/12380>`_
+
 
 .. _ui_toolkit:
 
@@ -47,10 +96,15 @@ can use the example page as a template for creating your own new pages.
 Using the edX UI Toolkit
 ************************
 
-The edX UI Toolkit is a JavaScript library that you can use to
-develop UI functionality for the edX platform. The edX UI Toolkit
-is available from the `edx-ui-toolkit GitHub repository`_ . For more
-information about the UI Toolkit, see `ui-toolkit.edx.org`_ .
+The edX UI Toolkit is a JavaScript library for building edX web applications.
+The UI toolkit consists of:
+
+* Backbone views to implement patterns as defined by the edX Pattern Library.
+
+* Utility methods to simplify the creation and testing of user interfaces.
+
+The edX UI Toolkit is available from the `edx-ui-toolkit GitHub repository`_ .
+For more information about the UI Toolkit, see `ui-toolkit.edx.org`_ .
 
 For more information about writing JavaScript for edX UIs, see :ref:`edx_javascript_guidelines`.
 
@@ -64,8 +118,7 @@ This document is a collection of things to think about when creating a new page
 in Studio or the LMS. This is a living document so please add to it if you find
 something to be missing.
 
-You should also read `Code Review Guidelines and Gotchas <https://openedx.atlas
-sian.net/wiki/display/TNL/Code+Review+Guidelines+and+Gotchas>`_ to understand
+You should also read :ref:`Contributing to Open edX` to understand
 more general best practices, as well as how to submit your new code for review.
 
 .. contents::
@@ -184,13 +237,10 @@ of file dependencies.
 * If you need server-side data passed to your page, pass it as one or more
   parameters to your factory.
 
-    * To pass JSON data structures, use json.dumps but be sure to escape it
-      with ``EscapedEdxJSONEncoder`` to avoid XSS.
+  For information about avoiding cross-site scripting, see :ref:`JavaScript Context in Mako`.
 
-* Be careful when adding new third party libraries.
-
-    * If the library doesn't support RequireJS then it needs to be shimmed in
-      require-config.js.
+* For information about adding third-party JavaScript libraries, see
+  :ref:`adding_javascript_libraries`.
 
 * If the dependency is pre-loaded, then be sure to specify its path as empty in
   build.js so that the optimizer doesn't include it in the bundled file. This
@@ -205,24 +255,9 @@ of file dependencies.
         ...
     }
 
-Here is an example Mako code block that demonstrates how this all ties
-together.
+See an example Mako code block in :ref:`JavaScript Context in Mako`.
 
-.. code-block:: html
-
-    <%block name="js_extra">
-    <%static:require_module module_name="teams/js/teams_tab_factory"
-      class_name="TeamsTabFactory">
-        TeamsTabFactory(
-            $('.teams-content'),
-            ${ json.dumps(topics, cls=EscapedEdxJSONEncoder) },
-            '${ topics_url }',
-            '${ unicode(course.id) }'
-        );
-    </%static:require_module>
-    </%block>
-
-Here are a few examples.
+The following list includes more examples.
 
 * `Studio Course Outline (Studio) <https://github.com/edx/edx-
   platform/blob/master/cms/static/js/views/pages/course_outline.js>`_
@@ -240,6 +275,56 @@ Here are a few examples.
 
     Using RequireJS in XBlocks is not currently supported. This is something
     that we intend to address in the future.
+
+.. _adding_javascript_libraries:
+
+===========================
+Adding JavaScript Libraries
+===========================
+
+Install JavaScript libraries using the npm package manager.
+
+If the library you want to add is available from `npmjs.com
+<https://www.npmjs.com/>`_,  update edx-platform's package.json file to
+reference the library. Use the tilde ``~`` prefix for the version to allow
+patches to be picked up automatically.
+
+For more information about versioning, see `semver.org <http://semver.org/>`_.
+
+Execute the following command to install your library.
+
+.. code-block:: shell
+
+    paver install_prereqs
+
+Add the new library to the `list of NPM-installed libraries <https://github.com/edx/edx-platform/blob/master/pavelib/assets.py#L43>`_.
+
+Execute the following command to make your library available as a Django static asset (choose LMS, Studio, or both).
+
+.. code-block:: shell
+
+    paver update_assets lms --settings=devstack
+
+To add the new library to the LMS, do the following.
+
+#. Add the library to the `lms/env/common.py` file at https://github.com/edx
+   /edx-platform/blob/master/lms/envs/common.py#L1246
+
+#. Add the library to `lms/static/lms/js/require-config.js
+   <https://github.com/edx/edx-platform/blob/master/lms/static/lms/js/require-
+   config.js#L51>`_.
+
+Add the new library to the list of vendor libraries that are installed by update_assets. Update the variable NPM_INSTALLED_LIBRARIES in `/pavelib/assets.py <https://github.com/edx/edx-platform/blob/master/pavelib/assets.py#L47>`_.
+
+.. note::
+
+    Reference the unminified version of the library. This allows developers
+    to debug into the library, and the Django static asset pipeline will
+    ensure that it get optimized for production.
+
+If you cannot use NPM, check the file into the `common/static/js/vendor
+<https://github.com/edx/edx-platform/tree/master/common/static/js/vendor>`_
+directory.
 
 .. _use_underscore_and_requirejs_text:
 
@@ -329,8 +414,8 @@ dependencies.
 * Note that Bok Choy tests run with optimized files to verify that they are
   being generated as expected.
 
-* Be sure to verify your page on a sandbox, checking that all dependencies are
-  included in the optimized factory file.
+* Be sure to test your page in a production environment, checking that all
+  dependencies are included in the optimized factory file.
 
     * For LMS files, take care that all of the JS files have a MD5 hash code
       between their filename and the js extension-- files without MD5 hash
@@ -351,47 +436,5 @@ unit tested with Jasmine.
 See `How to add a new feature to LMS or Studio <https://openedx.atlassian.net/w
 iki/display/AC/How+to+add+a+new+feature+to+LMS+or+Studio>`_ to see how to
 structure your Backbone code.
-
-===================================
-Set Up Your Page To Use Online Help
-===================================
-
-.. note::
-
-    Online help is currently for Studio only. See  :jira:`TNL-622`  for the
-    story to add help to the LMS.
-
-#. Ask a documentation team member for a help token for your new page.
-
-#. At the top of your Mako template, add the following element.
-
-    .. code-block:: html
-
-        <%def name="online_help_token()"><% return "YOUR_NEW_TOKEN" %></%def>
-
-#. Update edx-platform/docs/config.ini to reference the new token (or have the
-   doc team do so when they have the target html file ready)
-
-#. If you want a direct link other than the standard "Help" button, use the
-   following URL:
-
-    .. code-block:: html
-
-    <a href="${get_online_help_info(online_help_token())['doc_url']}"
-       target="_blank" class="button external-help-button">${_("Learn more
-       about MY_FEATURE")}</a>
-
-=======================================
-Verify the Performance of Your New Page
-=======================================
-
-All new pages should have the performance analyzed to ensure that they perform
-adequately.
-
-See `Measuring edx platform performance with sitespeed.io <https://openedx.atla
-ssian.net/wiki/display/PERF/Measuring+edx+platform+performance+with+sitespeed.i
-o>`_ for a description of the recommended approach.
-
-
 
 .. include:: ../../links/links.rst
