@@ -623,8 +623,8 @@ This section includes descriptions of the following events.
   :depth: 1
 
 
-``edx.ui.lms.sequence.next_selected``/``seq_next``
-**************************************************
+``edx.ui.lms.sequence.next_selected``
+*************************************
 
 The browser emits this event when a user selects the "next" control in the
 unit navigation bar in the LMS. Users can use the "next" control to navigate
@@ -659,27 +659,8 @@ longer emitted.
 
 **Event Source**: Browser
 
-The ``edx.ui.lms.sequence.next_selected`` event includes identifying
-``event_type`` and ``name`` fields.
-
-.. list-table::
-   :widths: 15 15 60
-   :header-rows: 1
-
-   * - Field
-     - Type
-     - Details
-
-   * - ``event_type``
-     - string
-     - .
-
-   * - ``name``
-     - string
-     - .
-
-The ``edx.ui.lms.sequence.next_selected`` event includes the following
-``event`` member fields.
+The ``edx.ui.lms.sequence.next_selected`` event includes both a ``name`` field
+and an ``event_type`` field.
 
 ``event`` **Member Fields**:
 
@@ -736,6 +717,21 @@ The ``edx.ui.lms.sequence.next_selected`` event includes the following
        LMS. Values for this field can be "top" or "bottom", indicating the
        position on the page of the control that the user selected.
 
+Example ``edx.ui.lms.sequence.next_selected`` event
+***************************************************
+
+.. code-block:: json
+
+{
+  "name": "edx.ui.lms.sequence.next_selected",
+  "event_type": "edx.ui.lms.sequence.next_selected",
+  "event": {
+    "current_tab": 6,
+    "tab_count": 6,
+    "id": "block-v1:edX+DemoX+Demo_Course+type@sequential+block@19a30717eff543078a5d94ae9d6c18a5",
+    "widget_placement": "bottom"
+  }
+}
 
 
 ``edx.ui.lms.sequence.previous_selected``
@@ -774,9 +770,8 @@ longer emitted.
 
 **Event Source**: Browser
 
-The ``edx.ui.lms.sequence.previous_selected`` event includes the same
-identifying ``event_type`` and ``name`` fields as described for the
-``edx.ui.lms.sequence.next_selected`` event.
+The ``edx.ui.lms.sequence.previous_selected`` event includes both a ``name``
+field and an ``event_type`` field.
 
 ``event`` **Member Fields**:
 
@@ -814,9 +809,8 @@ longer emitted.
 
 **Event Source**: Browser
 
-The ``edx.ui.lms.sequence.tab_selected`` event includes the same identifying
-``event_type`` and ``name`` fields as described for the
-``edx.ui.lms.sequence.next_selected`` event.
+The ``edx.ui.lms.sequence.tab_selected`` event includes both a ``name`` field
+and an ``event_type`` field.
 
 ``event`` **Member Fields**:
 
@@ -844,6 +838,26 @@ this type as for ``edx.ui.lms.sequence.next_selected`` events.
 * ``old``
 * ``tab_count``
 * ``widget_placement``
+
+
+Example ``edx.ui.lms.sequence.tab_selected`` event
+***************************************************
+
+.. code-block:: json
+
+{
+  "name": "edx.ui.lms.sequence.tab_selected",
+  "event_type": "seq_goto",
+  "event": {
+    "current_tab": 3,
+    "target_tab": 7,
+    "tab_count": 7,
+    "old": 3,
+    "new": 7,
+    "id": "block-v1:edX+DemoX+Demo_Course+type@sequential+block@19a30717eff543078a5d94ae9d6c18a5",
+    "widget_placement": "top"
+  }
+}
 
 
 ``page_close``
