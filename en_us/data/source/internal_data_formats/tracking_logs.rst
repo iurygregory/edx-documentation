@@ -722,16 +722,16 @@ Example ``edx.ui.lms.sequence.next_selected`` event
 
 .. code-block:: json
 
-{
-  "name": "edx.ui.lms.sequence.next_selected",
-  "event_type": "edx.ui.lms.sequence.next_selected",
-  "event": {
-    "current_tab": 6,
-    "tab_count": 6,
-    "id": "block-v1:edX+DemoX+Demo_Course+type@sequential+block@19a30717eff543078a5d94ae9d6c18a5",
-    "widget_placement": "bottom"
-  }
-}
+ {
+     "name": "edx.ui.lms.sequence.next_selected",
+     "event_type": "edx.ui.lms.sequence.next_selected",
+     "event": {
+         "current_tab": 6,
+         "tab_count": 6,
+         "id": "block-v1:edX+DemoX+Demo_Course+type@sequential+block@19a30717eff543078a5d94ae9d6c18a5",
+         "widget_placement": "bottom"
+         }
+ }
 
 
 ``edx.ui.lms.sequence.previous_selected``
@@ -845,19 +845,19 @@ Example ``edx.ui.lms.sequence.tab_selected`` event
 
 .. code-block:: json
 
-{
-  "name": "edx.ui.lms.sequence.tab_selected",
-  "event_type": "seq_goto",
-  "event": {
-    "current_tab": 3,
-    "target_tab": 7,
-    "tab_count": 7,
-    "old": 3,
-    "new": 7,
-    "id": "block-v1:edX+DemoX+Demo_Course+type@sequential+block@19a30717eff543078a5d94ae9d6c18a5",
-    "widget_placement": "top"
-  }
-}
+ {
+     "name": "edx.ui.lms.sequence.tab_selected",
+     "event_type": "seq_goto",
+     "event": {
+         "current_tab": 3,
+         "target_tab": 7,
+         "tab_count": 7,
+         "old": 3,
+         "new": 7,
+         "id": "block-v1:edX+DemoX+Demo_Course+type@sequential+block@19a30717eff543078a5d94ae9d6c18a5",
+         "widget_placement": "top"
+         }
+ }
 
 
 ``page_close``
